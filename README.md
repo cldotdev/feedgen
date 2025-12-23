@@ -12,7 +12,7 @@ A web service to generate Atom feeds from websites.
 - Hacker News
   - Top links: https://feedgen.org/hackernews?category=best
 - HackMD
-  - Published notes: https://feedgen.org/hackmd?u=@BASHCAT
+  - Published notes: https://feedgen.org/hackmd?u=@hackmd-blog
 - 批踢踢實業坊
   - Steam 版: https://feedgen.org/ptt?b=Steam
   - 電影版 (30 推以上): https://feedgen.org/ptt?b=movie&q=recommend:30
