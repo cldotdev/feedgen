@@ -62,7 +62,7 @@ func (parser GamerForumParser) GetFeed(query feedgen.QueryValues) (feed *feeds.F
 
 	gp := query.Get("gp")
 	if gp != "" {
-		if matched, _ := regexp.MatchString(`^5|20|50|100|200$`, gp); !matched {
+		if matched, _ := regexp.MatchString(`^(5|20|50|100|200)$`, gp); !matched {
 			err = &feedgen.ParameterValueInvalidError{"gp"}
 			return
 		}
@@ -83,6 +83,9 @@ func (parser GamerForumParser) GetFeed(query feedgen.QueryValues) (feed *feeds.F
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return
+	}
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0")
 	resp, err := client.Do(req)
 	if err != nil {

@@ -2,10 +2,10 @@ package site
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
+	neturl "net/url"
 	"regexp"
-	"sort"
 	"time"
 
 	"github.com/gorilla/feeds"
@@ -31,7 +31,7 @@ func (parser PttParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, er
 	if q == "" {
 		url = "https://www.ptt.cc/bbs/" + boardName + "/index.html"
 	} else {
-		url = "https://www.ptt.cc/bbs/" + boardName + "/search?q=" + q
+		url = "https://www.ptt.cc/bbs/" + boardName + "/search?q=" + neturl.QueryEscape(q)
 	}
 
 	feed = &feeds.Feed{
@@ -45,6 +45,9 @@ func (parser PttParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, er
 	client := &http.Client{}
 	cookie := http.Cookie{Name: "over18", Value: "1"}
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return
+	}
 	req.AddCookie(&cookie)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -52,7 +55,7 @@ func (parser PttParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, er
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
@@ -85,9 +88,7 @@ func (parser PttParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, er
 		feedItems = append(feedItems, feedItem)
 	}
 
-	sort.Slice(feedItems, func(i, j int) bool {
-		return feedItems[i].Created.After(feedItems[j].Created)
-	})
+	feedgen.SortFeedItemsLatestFirst(feedItems)
 
 	for _, feedItem := range feedItems {
 		feed.Add(feedItem)
@@ -104,6 +105,9 @@ func (parser PttParser) GetFeedItem(url string) (feedItem *feeds.Item, err error
 	client := &http.Client{}
 	cookie := http.Cookie{Name: "over18", Value: "1"}
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return
+	}
 	req.AddCookie(&cookie)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -111,7 +115,7 @@ func (parser PttParser) GetFeedItem(url string) (feedItem *feeds.Item, err error
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}

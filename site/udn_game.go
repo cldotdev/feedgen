@@ -2,7 +2,7 @@ package site
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -59,9 +59,11 @@ func (parser UdnGameParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed
 			subTitle = "最多瀏覽"
 		default:
 			err = &feedgen.ParameterValueInvalidError{"by"}
+			return
 		}
 	default:
 		err = &feedgen.ParameterValueInvalidError{"section"}
+		return
 	}
 
 	title = fmt.Sprintf("%s | 遊戲角落", subTitle)
@@ -76,13 +78,16 @@ func (parser UdnGameParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", rawLink, nil)
+	if err != nil {
+		return
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}

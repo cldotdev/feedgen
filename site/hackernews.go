@@ -2,7 +2,7 @@ package site
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -53,7 +53,7 @@ func (parser HackernewsParser) GetBestFeed() (feed *feeds.Feed, err error) {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
@@ -70,6 +70,9 @@ func (parser HackernewsParser) GetBestFeed() (feed *feeds.Feed, err error) {
 		var itemCommentDesc string
 
 		itemLink := string(m[1])
+		if !strings.HasPrefix(itemLink, "http") {
+			itemLink = "https://news.ycombinator.com/" + itemLink
+		}
 		itemTitle := string(m[2])
 		itemPoint := string(m[3])
 		itemAuthor := string(m[4])
