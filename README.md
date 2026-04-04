@@ -5,20 +5,22 @@ A web service to generate Atom feeds from websites.
 ## Supported Sites and Examples
 
 - 大管家房屋網
-  - https://feedgen.org/chrb
+  - <https://feedgen.org/chrb>
 - 巴哈姆特-哈拉區
-  - 精靈寶可夢: https://feedgen.org/gamer_forum?bsn=1647
-  - 魔物獵人 (20 推以上): https://feedgen.org/gamer_forum?bsn=5786&gp=20
+  - 精靈寶可夢: <https://feedgen.org/gamer_forum?bsn=1647>
+  - 魔物獵人 (20 推以上): <https://feedgen.org/gamer_forum?bsn=5786&gp=20>
 - Hacker News
-  - Top links: https://feedgen.org/hackernews?category=best
+  - Top links: <https://feedgen.org/hackernews?category=best>
 - HackMD
-  - Published notes: https://feedgen.org/hackmd?u=@hackmd-blog
+  - Published notes: <https://feedgen.org/hackmd?u=@hackmd-blog>
 - 批踢踢實業坊
-  - Steam 版: https://feedgen.org/ptt?b=Steam
-  - 電影版 (30 推以上): https://feedgen.org/ptt?b=movie&q=recommend:30
+  - Steam 版: <https://feedgen.org/ptt?b=Steam>
+  - 電影版 (30 推以上): <https://feedgen.org/ptt?b=movie&q=recommend:30>
+- 轉角國際
+  - 深度專欄: <https://feedgen.org/udn_global_vision?tag=in-depth-column>
 - 遊戲角落
-  - 最新文章: https://feedgen.org/udn_game?section=rank&by=newest
-  - 最多瀏覽: https://feedgen.org/udn_game?section=rank&by=pv
+  - 最新文章: <https://feedgen.org/udn_game?section=rank&by=newest>
+  - 最多瀏覽: <https://feedgen.org/udn_game?section=rank&by=pv>
 
 ## Getting Started
 

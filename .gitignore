@@ -35,5 +35,6 @@ go.work
 .env
 .env.local
 
-# Secrets
+# AI agent files
 .secrets/
+.audit/
