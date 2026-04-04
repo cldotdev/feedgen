@@ -8,7 +8,6 @@ import (
 
 // TestPttParser_GetFeed_Steam tests feed generation for PTT Steam board
 func TestPttParser_GetFeed_Steam(t *testing.T) {
-	t.Parallel()
 	parser := PttParser{}
 
 	// Test with b=Steam
@@ -37,7 +36,6 @@ func TestPttParser_GetFeed_Steam(t *testing.T) {
 
 // TestPttParser_GetFeed_Movie tests feed generation for PTT movie board with recommend filter
 func TestPttParser_GetFeed_Movie(t *testing.T) {
-	t.Parallel()
 	parser := PttParser{}
 
 	// Test with b=movie&q=recommend:30
@@ -64,7 +62,6 @@ func TestPttParser_GetFeed_Movie(t *testing.T) {
 
 // TestPttParser_ArticleLinks tests HTTP response for article links
 func TestPttParser_ArticleLinks(t *testing.T) {
-	t.Parallel()
 	parser := PttParser{}
 	query := url.Values{}
 	query.Set("b", "Steam")
@@ -112,7 +109,6 @@ func TestPttParser_ArticleLinks(t *testing.T) {
 
 // TestPttParser_MissingParameter tests error handling for missing b parameter
 func TestPttParser_MissingParameter(t *testing.T) {
-	t.Parallel()
 	parser := PttParser{}
 	query := url.Values{}
 
