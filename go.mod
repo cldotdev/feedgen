@@ -1,4 +1,4 @@
-module github.com/jlhg/feedgen
+module github.com/cldotdev/feedgen
 
 go 1.25.3
 

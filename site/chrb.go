@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/feeds"
 
-	"github.com/jlhg/feedgen"
+	"github.com/cldotdev/feedgen"
 )
 
 // ChrbParser is a parser for 大管家房屋網 (https://www.chrb.com.tw/tenement.php).

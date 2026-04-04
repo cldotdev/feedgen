@@ -11,7 +11,7 @@ import (
 
 	"github.com/gorilla/feeds"
 
-	"github.com/jlhg/feedgen"
+	"github.com/cldotdev/feedgen"
 )
 
 // HackernewsParser is a parser for Hacker News (https://news.ycombinator.com/).

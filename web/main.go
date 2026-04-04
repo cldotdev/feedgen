@@ -16,8 +16,8 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/gorilla/feeds"
 
-	"github.com/jlhg/feedgen"
-	"github.com/jlhg/feedgen/site"
+	"github.com/cldotdev/feedgen"
+	"github.com/cldotdev/feedgen/site"
 )
 
 type bodyLogWriter struct {
@@ -118,7 +118,7 @@ func setRouter() *gin.Engine {
 	}
 
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusTemporaryRedirect, "https://github.com/jlhg/feedgen")
+		c.Redirect(http.StatusTemporaryRedirect, "https://github.com/cldotdev/feedgen")
 	})
 
 	r.GET("/chrb", route(&site.ChrbParser{}))

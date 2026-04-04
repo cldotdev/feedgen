@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/feeds"
 
-	"github.com/jlhg/feedgen"
+	"github.com/cldotdev/feedgen"
 )
 
 // GamerForumParser is a parser for Gamer Forum (https://forum.gamer.com.tw/).

@@ -9,7 +9,7 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/gorilla/feeds"
 
-	"github.com/jlhg/feedgen"
+	"github.com/cldotdev/feedgen"
 )
 
 // HackmdData represents the response from HackMD API

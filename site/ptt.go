@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/feeds"
 
-	"github.com/jlhg/feedgen"
+	"github.com/cldotdev/feedgen"
 )
 
 // PttParser is a parser for PTT Web (https://www.ptt.cc/bbs/index.html).

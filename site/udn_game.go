@@ -9,7 +9,7 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/gorilla/feeds"
 
-	"github.com/jlhg/feedgen"
+	"github.com/cldotdev/feedgen"
 )
 
 type UdnGameData struct {
