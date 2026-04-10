@@ -1,6 +1,7 @@
 package site
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,6 +13,19 @@ import (
 
 	"github.com/cldotdev/feedgen"
 )
+
+// pttTransport uses classic key exchange curves only.
+// Go 1.26+ sends post-quantum MLKEM key shares by default, which enlarges
+// the TLS ClientHello beyond what some network middleboxes can handle,
+// causing "connection reset by peer" errors on certain hosting platforms.
+var pttTransport = &http.Transport{
+	TLSClientConfig: &tls.Config{
+		MinVersion:       tls.VersionTLS12,
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256, tls.CurveP384},
+	},
+}
+
+var pttClient = &http.Client{Transport: pttTransport, Timeout: 30 * time.Second}
 
 // PttParser is a parser for PTT Web (https://www.ptt.cc/bbs/index.html).
 type PttParser struct{}
@@ -42,7 +56,7 @@ func (parser PttParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, er
 		Created:     now,
 	}
 
-	client := &http.Client{}
+	client := pttClient
 	cookie := http.Cookie{Name: "over18", Value: "1"}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -102,7 +116,7 @@ func (parser PttParser) GetFeedItem(url string) (feedItem *feeds.Item, err error
 	re := regexp.MustCompile(`(?s)<div id="main-content" class="bbs-screen bbs-content"><div class="article-metaline"><span class="article-meta-tag">作者</span><span class="article-meta-value">(.+?)</span></div>(<div class="article-metaline-right"><span class="article-meta-tag">看板</span><span class="article-meta-value">(.+?)</span></div>)?<div class="article-metaline"><span class="article-meta-tag">標題</span><span class="article-meta-value">(.+?)</span></div>(<div class="article-metaline"><span class="article-meta-tag">時間</span><span class="article-meta-value">(.+?)</span></div>)?(.+?)<span class="f2">※ (發信站|編輯)`)
 	re2 := regexp.MustCompile(`(?s)class="bbs-screen bbs-content">(.+?)<span class="f2">※ (發信站|編輯)`)
 	re3 := regexp.MustCompile(`404 - Not Found`)
-	client := &http.Client{}
+	client := pttClient
 	cookie := http.Cookie{Name: "over18", Value: "1"}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

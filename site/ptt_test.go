@@ -82,7 +82,7 @@ func TestPttParser_ArticleLinks(t *testing.T) {
 		return
 	}
 
-	client := &http.Client{}
+	client := pttClient
 	req, err := http.NewRequest("GET", item.Link.Href, nil)
 	if err != nil {
 		t.Errorf("Failed to create request for %s: %v", item.Link.Href, err)

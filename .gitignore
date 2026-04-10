@@ -38,3 +38,5 @@ go.work
 # AI agent files
 .secrets/
 .audit/
+.claude/skills/openspec-*/
+.claude/commands/opsx/
