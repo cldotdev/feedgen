@@ -8,7 +8,8 @@ A web service to generate Atom feeds from websites.
 ## Supported Sites and Examples
 
 - 大管家房屋網
-  - <https://feedgen.org/chrb>
+  - 租屋物件: <https://feedgen.org/chrb>
+  - 最新上架: <https://feedgen.org/chrb?sort=newest>
 - 巴哈姆特-哈拉區
   - 精靈寶可夢: <https://feedgen.org/gamer_forum?bsn=1647>
   - 魔物獵人 (20 推以上): <https://feedgen.org/gamer_forum?bsn=5786&gp=20>
