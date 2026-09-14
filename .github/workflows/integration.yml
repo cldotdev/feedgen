@@ -27,5 +27,10 @@ jobs:
       # -count=1 defeats the test result cache that setup-go restores. Without
       # it, an unchanged commit reports a cached pass without reaching a single
       # site, which is the one thing this run exists to do.
+      #
+      # chrb.com.tw sits behind Cloudflare, which answers 403 to the datacenter
+      # addresses this runner has while every other site here answers normally.
+      # Its tests can only run somewhere the site accepts, so -skip excludes
+      # them rather than leaving a permanent red that says nothing.
       - name: Run the site parser tests
-        run: go test -count=1 -timeout 20m ./site/...
+        run: go test -count=1 -timeout 20m -skip 'TestChrb' ./site/...
