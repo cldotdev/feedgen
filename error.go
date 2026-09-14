@@ -14,16 +14,6 @@ func (e ItemFetchError) Error() string {
 	return fmt.Sprintf("items can't be fetched from the source URL: %s", e.SourceURL)
 }
 
-// PageContentFetchError shows that the page content can't be fetched from the source URL.
-type PageContentFetchError struct {
-	SourceURL string
-}
-
-// Error returns error message
-func (e PageContentFetchError) Error() string {
-	return fmt.Sprintf("page content can't be fetched from the source URL: %s.", e.SourceURL)
-}
-
 // PageContentNotFoundError shows that the page content is not available from the source URL.
 type PageContentNotFoundError struct {
 	SourceURL string
