@@ -8,7 +8,7 @@ RUN CGO_ENABLED=0 go build -o bin/webserver web/main.go
 
 # Final stage
 FROM alpine:3.23
-RUN apk add --no-cache ca-certificates=20251003-r0 curl=8.17.0-r1
+RUN apk add --no-cache ca-certificates=20260611-r0 curl=8.22.0-r0
 WORKDIR /app
 COPY --from=builder /app/bin/webserver .
 EXPOSE 8080
