@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"net/http"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gorilla/feeds"
@@ -23,8 +21,6 @@ var scitechvistaFeedTitles = map[string]string{
 	"featured": "精選文章 | 科技大觀園",
 }
 
-var scitechvistaClient = &http.Client{Timeout: 30 * time.Second}
-
 // The same page also renders a 推薦文章 sidebar whose anchors carry
 // "kf-item py-3", so anchoring on "kf-item align-items-center" keeps the
 // sidebar out of the feed. Capturing one anchor at a time also bounds each
@@ -37,10 +33,6 @@ var (
 	scitechvistaTextRe   = regexp.MustCompile(`(?s)<div class="kf-txt[^"]*">(.*?)</div>`)
 	scitechvistaAuthorRe = regexp.MustCompile(`(?s)<span class="text-truncate Author">(.*?)</span>`)
 )
-
-// time.LoadLocation is avoided here because the runtime image may ship
-// without tzdata.
-var scitechvistaZone = time.FixedZone("CST", 8*60*60)
 
 // ScitechvistaParser is a parser for 科技大觀園 (https://scitechvista.nat.gov.tw/).
 type ScitechvistaParser struct{}
@@ -61,7 +53,7 @@ func (parser ScitechvistaParser) GetFeed(query feedgen.QueryValues) (feed *feeds
 
 	link := fmt.Sprintf("%s/Article/C000003/%s", scitechvistaBaseURL, sectionSlug)
 
-	resp, err := scitechvistaClient.Get(link)
+	resp, err := client.Get(link)
 	if err != nil {
 		return
 	}
@@ -100,24 +92,15 @@ func (parser ScitechvistaParser) GetFeed(query feedgen.QueryValues) (feed *feeds
 
 		feed.Add(&feeds.Item{
 			Id:          itemLink,
-			Title:       scitechvistaField(scitechvistaTitleRe, entry[2]),
+			Title:       field(scitechvistaTitleRe, entry[2]),
 			Link:        &feeds.Link{Href: itemLink},
-			Description: scitechvistaField(scitechvistaTextRe, entry[2]),
-			Author:      &feeds.Author{Name: scitechvistaField(scitechvistaAuthorRe, entry[2])},
+			Description: field(scitechvistaTextRe, entry[2]),
+			Author:      &feeds.Author{Name: field(scitechvistaAuthorRe, entry[2])},
 			Created:     created,
 		})
 	}
 
 	return
-}
-
-func scitechvistaField(re *regexp.Regexp, entry string) string {
-	match := re.FindStringSubmatch(entry)
-	if match == nil {
-		return ""
-	}
-
-	return strings.TrimSpace(html.UnescapeString(match[1]))
 }
 
 func scitechvistaCreated(entry string) (created time.Time, ok bool) {
@@ -130,5 +113,5 @@ func scitechvistaCreated(entry string) (created time.Time, ok bool) {
 	month, _ := strconv.Atoi(match[2])
 	day, _ := strconv.Atoi(match[3])
 
-	return time.Date(rocYear+1911, time.Month(month), day, 0, 0, 0, 0, scitechvistaZone), true
+	return time.Date(rocYear+1911, time.Month(month), day, 0, 0, 0, 0, zone), true
 }
