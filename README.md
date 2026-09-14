@@ -16,6 +16,10 @@ A web service to generate Atom feeds from websites.
 - 批踢踢實業坊
   - Steam 版: <https://feedgen.org/ptt?b=Steam>
   - 電影版 (30 推以上): <https://feedgen.org/ptt?b=movie&q=recommend:30>
+- 科技大觀園
+  - 最新文章: <https://feedgen.org/scitechvista?section=new>
+  - 熱門文章: <https://feedgen.org/scitechvista?section=hot>
+  - 精選文章: <https://feedgen.org/scitechvista?section=featured>
 - 轉角國際
   - 深度專欄: <https://feedgen.org/udn_global_vision?tag=in-depth-column>
 - 遊戲角落
