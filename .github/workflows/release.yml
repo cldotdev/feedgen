@@ -41,7 +41,14 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      # actions/checkout maps the pushed commit straight onto refs/tags,
+      # leaving a lightweight tag that carries no annotation. --notes-from-tag
+      # reads the local tag and falls back to the commit message when the
+      # annotation is missing, so the release notes depend on this fetch.
       - name: Create the GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "$GITHUB_REF_NAME" --generate-notes
+        run: |
+          git fetch --force origin \
+            "refs/tags/$GITHUB_REF_NAME:refs/tags/$GITHUB_REF_NAME"
+          gh release create "$GITHUB_REF_NAME" --verify-tag --notes-from-tag
