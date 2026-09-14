@@ -1,0 +1,43 @@
+---
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        run: make install
+
+      # gofmt reports offending files on stdout and still exits 0.
+      - name: Check formatting
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "gofmt needs to run on:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      # Covers every package, including the test files that make install
+      # does not build.
+      - name: Vet
+        run: go vet ./...

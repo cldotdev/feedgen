@@ -1,5 +1,8 @@
 # feedgen
 
+[![CI](https://github.com/cldotdev/feedgen/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/cldotdev/feedgen/actions/workflows/ci.yml)
+[![Integration](https://github.com/cldotdev/feedgen/actions/workflows/integration.yml/badge.svg?branch=master&event=schedule)](https://github.com/cldotdev/feedgen/actions/workflows/integration.yml)
+
 A web service to generate Atom feeds from websites.
 
 ## Supported Sites and Examples

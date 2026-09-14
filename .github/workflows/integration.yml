@@ -1,0 +1,31 @@
+---
+name: Integration
+
+# The site/ tests fetch the real sites they parse, so a failure here means a
+# target site changed or was unreachable, not that this repository regressed.
+# They stay off the pull request path for that reason.
+on:
+  schedule:
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Site parsers
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      # -count=1 defeats the test result cache that setup-go restores. Without
+      # it, an unchanged commit reports a cached pass without reaching a single
+      # site, which is the one thing this run exists to do.
+      - name: Run the site parser tests
+        run: go test -count=1 -timeout 20m ./site/...
