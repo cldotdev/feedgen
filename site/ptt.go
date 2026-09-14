@@ -146,7 +146,6 @@ func (parser PttParser) GetFeedItem(url string) (feedItem *feeds.Item, err error
 		if match == nil {
 			match = re3.FindSubmatch(body)
 			if match == nil {
-				// err = &feedgen.PageContentFetchError{url}
 				description = "<pre>" + string(body) + "</pre>"
 			} else {
 				err = &feedgen.PageContentNotFoundError{SourceURL: url}
