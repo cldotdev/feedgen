@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
 	"github.com/gorilla/feeds"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/cldotdev/feedgen"
 	"github.com/cldotdev/feedgen/site"

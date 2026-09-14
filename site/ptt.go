@@ -35,7 +35,7 @@ func (parser PttParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, er
 	now := time.Now()
 	boardName := query.Get("b")
 	if boardName == "" {
-		err = &feedgen.ParameterNotFoundError{"b"}
+		err = &feedgen.ParameterNotFoundError{Parameter: "b"}
 		return
 	}
 
@@ -149,7 +149,7 @@ func (parser PttParser) GetFeedItem(url string) (feedItem *feeds.Item, err error
 				// err = &feedgen.PageContentFetchError{url}
 				description = "<pre>" + string(body) + "</pre>"
 			} else {
-				err = &feedgen.PageContentNotFoundError{url}
+				err = &feedgen.PageContentNotFoundError{SourceURL: url}
 				return
 			}
 

@@ -46,7 +46,7 @@ func (parser ChrbParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, e
 	re := regexp.MustCompile(`(?s)<a href="(\d+.html)".+?<span class="tenement_04">(.+?)</span>.+?<span class="tenement_06">(.+?)</span>.+?<span class="tenement_07">(用途：.+?)\&nbsp;.+?(總樓層：.+?)</span>.+?<!--<span class="tenement_07">(.+?)</span><br /> edit by.+?<td class="price" align="center" noWrap>(.+?)</td>.+?<td class="tenement_07" align="center" noWrap>(.+?)</td>.+?<td class="tenement_07" align="center" noWrap>(.+?)</td>.+?<td class="tenement_07" align="center" noWrap>(.+?)</td>`)
 	matchGroup := re.FindAllStringSubmatch(string(body), -1)
 	if len(matchGroup) == 0 {
-		err = &feedgen.ItemFetchError{link}
+		err = &feedgen.ItemFetchError{SourceURL: link}
 		return
 	}
 

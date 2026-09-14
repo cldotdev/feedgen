@@ -38,7 +38,7 @@ func (parser HackmdParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed,
 	// Get username from query parameter 'u'
 	username := query.Get("u")
 	if username == "" {
-		err = &feedgen.ParameterNotFoundError{"u"}
+		err = &feedgen.ParameterNotFoundError{Parameter: "u"}
 		return
 	}
 

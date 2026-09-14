@@ -24,9 +24,9 @@ func (parser HackernewsParser) GetFeed(query feedgen.QueryValues) (feed *feeds.F
 	case "best":
 		feed, err = parser.GetBestFeed()
 	case "":
-		err = &feedgen.ParameterNotFoundError{"category"}
+		err = &feedgen.ParameterNotFoundError{Parameter: "category"}
 	default:
-		err = &feedgen.ParameterValueInvalidError{"category"}
+		err = &feedgen.ParameterValueInvalidError{Parameter: "category"}
 		return
 	}
 
@@ -61,7 +61,7 @@ func (parser HackernewsParser) GetBestFeed() (feed *feeds.Feed, err error) {
 	re := regexp.MustCompile(`(?s)<td class="title"><span class="titleline"><a href="(.+?)".*?>(.+?)</a>.+?<span class="score" id=".+?">(\d+?) points</span>.+?by <a href=".+?" class="hnuser">(.+?)</a>.+?(\d+?) (days?|hours?|minutes?) ago.+?<a href="(.+?)">(\d+?)&nbsp;comments?</a>`)
 	matchGroup := re.FindAllSubmatch(body, -1)
 	if len(matchGroup) == 0 {
-		err = &feedgen.ItemFetchError{url}
+		err = &feedgen.ItemFetchError{SourceURL: url}
 		return
 	}
 

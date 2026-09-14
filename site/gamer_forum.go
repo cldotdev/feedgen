@@ -51,19 +51,19 @@ type GamerForumRespDataList struct {
 func (parser GamerForumParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, err error) {
 	bsn := query.Get("bsn")
 	if bsn == "" {
-		err = &feedgen.ParameterNotFoundError{"bsn"}
+		err = &feedgen.ParameterNotFoundError{Parameter: "bsn"}
 		return
 	}
 
 	if matched, _ := regexp.MatchString(`^\d+$`, bsn); !matched {
-		err = &feedgen.ParameterValueInvalidError{"bsn"}
+		err = &feedgen.ParameterValueInvalidError{Parameter: "bsn"}
 		return
 	}
 
 	gp := query.Get("gp")
 	if gp != "" {
 		if matched, _ := regexp.MatchString(`^(5|20|50|100|200)$`, gp); !matched {
-			err = &feedgen.ParameterValueInvalidError{"gp"}
+			err = &feedgen.ParameterValueInvalidError{Parameter: "gp"}
 			return
 		}
 	}
@@ -117,7 +117,7 @@ func (parser GamerForumParser) GetFeed(query feedgen.QueryValues) (feed *feeds.F
 	}
 
 	if len(respData.List) == 0 {
-		err = &feedgen.ItemFetchError{url}
+		err = &feedgen.ItemFetchError{SourceURL: url}
 		return
 	}
 
