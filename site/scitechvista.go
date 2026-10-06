@@ -83,12 +83,19 @@ func (parser ScitechvistaParser) GetFeed(query feedgen.QueryValues) (feed *feeds
 	}
 
 	for _, entry := range entries {
+		itemLink := scitechvistaBaseURL + html.UnescapeString(entry[1])
+
 		created, dated := scitechvistaCreated(entry[2])
 		if !dated {
+			feedgen.RecordSkip(feedgen.SkippedItem{
+				Parser:    "scitechvista",
+				SourceURL: link,
+				ItemURL:   itemLink,
+				Reason:    feedgen.SkipReasonNoDate,
+				Message:   "no parseable date in listing entry",
+			})
 			continue
 		}
-
-		itemLink := scitechvistaBaseURL + html.UnescapeString(entry[1])
 
 		feed.Add(&feeds.Item{
 			Id:          itemLink,

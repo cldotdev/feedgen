@@ -3,7 +3,7 @@
 - [x] 1.1 Create `site/thinkingtaiwan.go` with `ThinkingtaiwanParser` implementing `feedgen.Parser`, using the shared `client` and `zone` from `site/util.go`
 - [x] 1.2 Fetch `https://www.thinkingtaiwan.net/articles`, returning an error naming the URL on a non-2xx response
 - [x] 1.3 Extract each listing row's href (`/article/<id>` or `/content/<id>`), title, and teaser, bounding the field regexes to one row and unescaping HTML character references; return `ItemFetchError` when no row matches
-- [x] 1.4 Fetch each article page with at most two requests in flight, reading the `post-date` date as midnight in `zone` and the `field--name-field-writer` name as the author
+- [x] 1.4 Fetch each article page one at a time in listing order, reading the `post-date` date as midnight in `zone` and the `field--name-field-writer` name as the author
 - [x] 1.5 Skip an article whose page fails to load, returns a non-2xx status, or has no parseable date; keep an article with no writer, with an empty author
 - [x] 1.6 Build items in listing order with the absolute article URL as both `Id` and `Link`, the feed titled "最新文章 | 想想論壇" and linked to `/articles`; return `ItemFetchError` when every article was skipped
 
@@ -24,4 +24,4 @@
 ## 4. Review Fixes
 
 - [x] 4.1 Bound the date pattern to the `post-date` element, so a page without a date is skipped rather than matched against a later date on the page
-- [x] 4.2 Run the 想想論壇 tests with `-race` to confirm the bounded concurrent fetch is race-free
+- [x] 4.2 Run the 想想論壇 tests to confirm the serial fetch returns the items in listing order

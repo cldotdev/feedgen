@@ -43,3 +43,14 @@ type ParameterNotFoundError struct {
 func (e ParameterNotFoundError) Error() string {
 	return fmt.Sprintf("parameter %s is required", e.Parameter)
 }
+
+// UnexpectedStatusError shows that the source URL answered with a non-2xx status code.
+type UnexpectedStatusError struct {
+	SourceURL  string
+	StatusCode int
+}
+
+// Error returns error message
+func (e UnexpectedStatusError) Error() string {
+	return fmt.Sprintf("unexpected status %d from %s", e.StatusCode, e.SourceURL)
+}

@@ -17,6 +17,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/cldotdev/feedgen"
+	"github.com/cldotdev/feedgen/fetcherror"
 	"github.com/cldotdev/feedgen/site"
 )
 
@@ -164,6 +165,15 @@ func setLogger() {
 
 func main() {
 	setLogger()
+
+	recorder, err := fetcherror.Open(path.Join("log", "fetch_error.db"))
+	if err != nil {
+		log.Println("open fetch_error.db:", err)
+	} else {
+		defer recorder.Close()
+		feedgen.SetSkipRecorder(recorder)
+	}
+
 	r := setRouter()
 	r.Run()
 }

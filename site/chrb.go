@@ -92,12 +92,19 @@ func (parser ChrbParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, e
 	}
 
 	for _, entry := range entries {
+		itemLink := fmt.Sprintf("%s/%s", link, entry[1])
+
 		created, dated := chrbCreated(entry[2])
 		if !dated {
+			feedgen.RecordSkip(feedgen.SkippedItem{
+				Parser:    "chrb",
+				SourceURL: requestURL,
+				ItemURL:   itemLink,
+				Reason:    feedgen.SkipReasonNoDate,
+				Message:   "no parseable date in listing card",
+			})
 			continue
 		}
-
-		itemLink := fmt.Sprintf("%s/%s", link, entry[1])
 
 		feed.Add(&feeds.Item{
 			Id:          itemLink,

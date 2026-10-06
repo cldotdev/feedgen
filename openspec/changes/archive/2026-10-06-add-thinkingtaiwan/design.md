@@ -15,7 +15,7 @@ Properties of the site, verified against the live pages, that shape the approach
 **Goals:**
 
 - Give every item a real publication date, so the Atom output stays valid.
-- Keep upstream concurrency low enough not to trip whatever made the parallel crawl fail.
+- Keep upstream load low enough not to trip whatever made the parallel crawl fail, by fetching one request at a time.
 
 **Non-Goals:**
 
@@ -37,15 +37,15 @@ Fetch the listing once, then each listed article's page, and read the date and w
 - Sitemap `lastmod`: it is the node's modification time, not its publication time (`content/100471` shows an edit at 08:36:44 among scheduled on-the-minute times, and older nodes carry 2026 dates), and the sitemap is about 1 MB across four pages.
 - Leave the date unset: `gorilla/feeds` formats a zero `Created` and `Updated` as an empty string, which emits an empty `<updated>` element and makes the Atom output invalid.
 
-### 2. Two article fetches at a time, results kept in listing order
+### 2. Serial article fetches in listing order
 
-Fetch the article pages with at most two requests in flight, writing each result into the slot of its listing index, and assemble the feed from the slots in order.
+Fetch the article pages one at a time in listing order and add each usable item to the feed as it completes.
 
-**Rationale**: Serial fetching costs nine round trips per uncached request; two in flight halves that while staying far below the burst that returned empty pages. Writing into indexed slots keeps the listing order without a sort.
+**Rationale**: A timing probe fetched the same nine article pages serially and two at a time: totals were 3.15 s and 3.34 s serial against 3.33 s and 3.32 s with two in flight, and each request took about 670 ms with two in flight against about 330 ms alone. The server appears to queue requests from one client (inferred from timing, not from its configuration), so concurrency adds code without cutting latency. Serial fetching also matches `site/ptt.go` and keeps the listing order without a sort.
 
 **Alternatives considered**:
 
-- Serial, as `site/ptt.go` does: simplest, but about twice the latency, and two in flight has shown no failures.
+- Two requests in flight with per-index result slots: measured no faster than serial, and adds a semaphore, a wait group, and result slots.
 - Unbounded fan-out: nine simultaneous requests is close to the burst that already failed.
 
 ### 3. Regex scraping, one row at a time
@@ -81,7 +81,7 @@ Prefix the href with `https://www.thinkingtaiwan.net` and use it for both `Item.
 
 ## Risks / Trade-offs
 
-- **[Request amplification]** One feed request makes up to ten upstream requests when the Redis cache is off. → Mitigation: the site updates weekly and feed readers poll a few times a day, so the absolute volume stays small; concurrency is capped at two.
+- **[Request amplification]** One feed request makes up to ten upstream requests when the Redis cache is off. → Mitigation: the site updates weekly and feed readers poll a few times a day, so the absolute volume stays small; requests are sent one at a time.
 - **[Markup drift]** The regexes depend on Drupal theme class names (`entity-row-inner`, `field-body`, `post-date`, `field--name-field-writer`). → Mitigation: drift in the listing yields `ItemFetchError`, drift in the date yields the same once every article is skipped, and the integration tests catch both.
 - **[Midnight timestamps]** Same-day articles share a timestamp. → Mitigation: listing order is preserved, so readers that sort stably still show them in the site's order.
 - **[Partial markup drift]** If only some article pages change markup, those items silently drop from the feed. → Mitigation: accepted; the integration tests catch the drift only once every article drops.

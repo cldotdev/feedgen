@@ -1,12 +1,10 @@
 package site
 
 import (
-	"fmt"
 	"io"
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gorilla/feeds"
@@ -18,10 +16,6 @@ const (
 	thinkingtaiwanBaseURL = "https://www.thinkingtaiwan.net"
 
 	thinkingtaiwanFeedTitle = "最新文章 | 想想論壇"
-
-	// Bounds the load placed on the site: each feed request fetches one page
-	// per listing row.
-	thinkingtaiwanMaxInFlight = 2
 )
 
 // Rows are split on the row marker before any field is matched, so a row that
@@ -73,24 +67,6 @@ func (parser ThinkingtaiwanParser) GetFeed(query feedgen.QueryValues) (feed *fee
 		return
 	}
 
-	// Per-index slots keep the listing order without sorting.
-	complete := make([]bool, len(items))
-	sem := make(chan struct{}, thinkingtaiwanMaxInFlight)
-
-	var wg sync.WaitGroup
-	for i, item := range items {
-		wg.Add(1)
-		sem <- struct{}{}
-
-		go func() {
-			defer wg.Done()
-			defer func() { <-sem }()
-
-			complete[i] = thinkingtaiwanFillArticle(item)
-		}()
-	}
-	wg.Wait()
-
 	feed = &feeds.Feed{
 		Title:   thinkingtaiwanFeedTitle,
 		Link:    &feeds.Link{Href: link},
@@ -98,8 +74,10 @@ func (parser ThinkingtaiwanParser) GetFeed(query feedgen.QueryValues) (feed *fee
 		Created: time.Now(),
 	}
 
-	for i, item := range items {
-		if complete[i] {
+	// Fetched one at a time: the site appears to queue requests per client, so
+	// two in flight measured no faster than serial.
+	for _, item := range items {
+		if thinkingtaiwanFillArticle(item, link) {
 			feed.Add(item)
 		}
 	}
@@ -113,15 +91,24 @@ func (parser ThinkingtaiwanParser) GetFeed(query feedgen.QueryValues) (feed *fee
 }
 
 // thinkingtaiwanFillArticle sets the date and author from the article page and
-// reports whether the article has a usable date.
-func thinkingtaiwanFillArticle(item *feeds.Item) bool {
+// reports whether the article has a usable date. A skipped article is
+// recorded against the listing at link.
+func thinkingtaiwanFillArticle(item *feeds.Item, link string) bool {
+	skip := feedgen.SkippedItem{Parser: "thinkingtaiwan", SourceURL: link, ItemURL: item.Link.Href}
+
 	body, err := thinkingtaiwanGet(item.Link.Href)
 	if err != nil {
+		skip.Reason = feedgen.SkipReasonOf(err)
+		skip.Message = err.Error()
+		feedgen.RecordSkip(skip)
 		return false
 	}
 
 	match := thinkingtaiwanDateRe.FindStringSubmatch(body)
 	if match == nil {
+		skip.Reason = feedgen.SkipReasonNoDate
+		skip.Message = "no post-date on article page"
+		feedgen.RecordSkip(skip)
 		return false
 	}
 
@@ -143,7 +130,7 @@ func thinkingtaiwanGet(url string) (body string, err error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		err = fmt.Errorf("unexpected status %d from %s", resp.StatusCode, url)
+		err = &feedgen.UnexpectedStatusError{SourceURL: url, StatusCode: resp.StatusCode}
 		return
 	}
 

@@ -1,6 +1,7 @@
 package site
 
 import (
+	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io"
@@ -85,21 +86,36 @@ func (parser PttParser) GetFeed(query feedgen.QueryValues) (feed *feeds.Feed, er
 
 	re = regexp.MustCompile(fmt.Sprintf(`<a href="(/bbs/%s/M\..+?\.html)">`, boardName))
 	matchGroup := re.FindAllSubmatch(match, -1)
-	feedItemsCount := len(matchGroup)
-	if feedItemsCount == 0 {
+	if len(matchGroup) == 0 {
+		// A search with no results still renders the list container; only a
+		// page without it means the markup no longer matches.
+		if !bytes.Contains(body, []byte(`<div class="r-list-container`)) {
+			err = &feedgen.ItemFetchError{SourceURL: url}
+		}
 		return
 	}
 
 	for _, m := range matchGroup {
-		url := "https://www.ptt.cc" + string(m[1])
+		itemURL := "https://www.ptt.cc" + string(m[1])
 
-		var feedItem *feeds.Item
-		feedItem, err = parser.GetFeedItem(url)
-		if err != nil {
+		feedItem, itemErr := parser.GetFeedItem(itemURL)
+		if itemErr != nil {
+			feedgen.RecordSkip(feedgen.SkippedItem{
+				Parser:    "ptt",
+				SourceURL: url,
+				ItemURL:   itemURL,
+				Reason:    feedgen.SkipReasonOf(itemErr),
+				Message:   itemErr.Error(),
+			})
 			continue
 		}
 
 		feedItems = append(feedItems, feedItem)
+	}
+
+	if len(feedItems) == 0 {
+		err = &feedgen.ItemFetchError{SourceURL: url}
+		return
 	}
 
 	feedgen.SortFeedItemsLatestFirst(feedItems)

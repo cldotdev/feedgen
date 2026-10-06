@@ -75,6 +75,13 @@ func FetchArticles(rawLink string) ([]Article, error) {
 	articles := make([]Article, 0, len(data.Articles))
 	for _, a := range data.Articles {
 		if a.Time.Timestamp == 0 {
+			feedgen.RecordSkip(feedgen.SkippedItem{
+				Parser:    "udn",
+				SourceURL: rawLink,
+				ItemURL:   a.URL,
+				Reason:    feedgen.SkipReasonNoDate,
+				Message:   "article has a zero timestamp",
+			})
 			continue
 		}
 
