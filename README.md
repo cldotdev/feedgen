@@ -23,6 +23,8 @@ A web service to generate Atom feeds from websites.
   - 最新文章: <https://feedgen.org/scitechvista?section=new>
   - 熱門文章: <https://feedgen.org/scitechvista?section=hot>
   - 精選文章: <https://feedgen.org/scitechvista?section=featured>
+- 想想論壇
+  - 最新文章: <https://feedgen.org/thinkingtaiwan>
 - 轉角國際
   - 深度專欄: <https://feedgen.org/udn_global_vision?tag=in-depth-column>
 - 遊戲角落
