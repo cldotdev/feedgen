@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path"
@@ -97,8 +98,20 @@ func route(p feedgen.Parser) gin.HandlerFunc {
 	}
 }
 
+// isLocalRootRequest matches the container healthcheck. It checks RemoteIP
+// rather than ClientIP, which a request can forge through forwarding headers.
+func isLocalRootRequest(c *gin.Context) bool {
+	return c.Request.URL.Path == "/" && net.ParseIP(c.RemoteIP()).IsLoopback()
+}
+
 func setRouter() *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{Skip: isLocalRootRequest}), gin.Recovery())
+	// Cloudflare overwrites CF-Connecting-IP, so the client IP of a request
+	// that passes through Cloudflare cannot be forged. Without the header,
+	// ClientIP falls back to X-Forwarded-For.
+	r.TrustedPlatform = gin.PlatformCloudflare
+
 	redisHost := os.Getenv("FG_REDIS_HOST")
 	redisPassword := os.Getenv("FG_REDIS_PASSWORD")
 	redisDB := 0
